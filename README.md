@@ -6,12 +6,14 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/AungChitMoe1995/hiv-epidemiology-and-treatment-analytics)
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://hiv-epidemiology-and-treatment-analytics-acm.streamlit.app/)
+[![CI Pipeline](https://github.com/AungChitMoe1995/hiv-epidemiology-and-treatment-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/AungChitMoe1995/hiv-epidemiology-and-treatment-analytics/actions/workflows/ci.yml)
+[![Tests Pytest](https://img.shields.io/badge/Tests-Passing%20(12%2F12)-success.svg)](https://github.com/AungChitMoe1995/hiv-epidemiology-and-treatment-analytics/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![Database SQLite](https://img.shields.io/badge/Database-SQLite%203-lightgrey.svg)](https://www.sqlite.org/)
 [![Data Source UNAIDS](https://img.shields.io/badge/Data%20Source-UNAIDS%202026-orange.svg)](https://aidsinfo.unaids.org/)
 [![Data Source WHO GHO](https://img.shields.io/badge/Data%20Source-WHO%20GHO-brightgreen.svg)](https://www.who.int/data/gho)
 [![Data Source World Bank](https://img.shields.io/badge/Data%20Source-World%20Bank-purple.svg)](https://data.worldbank.org/)
-[![Tests Pytest](https://img.shields.io/badge/Tests-Passing%20(10%2F10)-success.svg)](https://pytest.org/)
 
 > ### 🌐 **Live Interactive Surveillance Dashboard:**
 > **👉 [https://hiv-epidemiology-and-treatment-analytics-acm.streamlit.app/](https://hiv-epidemiology-and-treatment-analytics-acm.streamlit.app/)**  
@@ -52,10 +54,10 @@ This project builds an **end-to-end, fully reproducible epidemiological analytic
 
 ## 3. Authoritative Data Sources & Provenance
 
-Every dataset utilized in this project was programmatically downloaded, inspected, and validated. **No synthetic data, simulated counts, or unverified schemas were used.**
+Every dataset utilized in this project was programmatically downloaded, inspected, and validated (`src/validation/data_audit.py`). **No synthetic data, simulated counts, or unverified schemas were used.**
 
-- **UNAIDS 2026 Epidemiological Estimates:** Direct download from `aidsinfo.unaids.org` (`Estimates_2026_en.csv`, 331.91 MB) and `unaids.org` (`UNAIDS_HIV_estimates_1990_to_present.xlsx`, 5.88 MB). Full 1990–2025 time-series with point estimates and 95% uncertainty intervals.
-- **WHO Global Health Observatory (GHO):** REST OData API feeds (`HIV_0000000006`, `HIV_ARTCOVERAGE`, `HIV_0000000026`, `HIV_0000000001`). Confirmed exact 1:1 numerical agreement with UNAIDS estimates.
+- **UNAIDS 2026 Epidemiological Estimates:** Direct download from `aidsinfo.unaids.org` (`Estimates_2026_en.zip`, 22.11 MiB / 23.19 MB compressed; `Estimates_2026_en.csv`, 331.91 MiB / 348.03 MB uncompressed, 2,197,290 rows) and `unaids.org` (`UNAIDS_HIV_estimates_1990_to_present.xlsx`, 5.88 MiB / 6.17 MB). Full 1990–2025 time-series with point estimates and 95% uncertainty intervals.
+- **WHO Global Health Observatory (GHO):** REST OData API feeds (`HIV_0000000006`, `HIV_ARTCOVERAGE`, `HIV_0000000026`, `HIV_0000000001`). Programmatically cross-validated in `src/validation/data_audit.py` across **13,191 matched country-year-indicator observations** (`reports/analysis_tables/who_unaids_cross_validation.csv`), confirming **100.00% exact 1:1 numerical agreement** (`Max |diff| = 0.0`, $r = 1.000000$) with UNAIDS estimates.
 - **World Bank World Development Indicators (WDI):** REST API feeds for GDP per capita in current US$ (`NY.GDP.PCAP.CD`), PPP constant 2021 international $ (`NY.GDP.PCAP.PP.KD`), and Total Population (`SP.POP.TOTL`).
 
 ---
@@ -63,12 +65,16 @@ Every dataset utilized in this project was programmatically downloaded, inspecte
 ## 4. Repository Structure
 
 ```
-hiv-trend-research/
+hiv-epidemiology-and-treatment-analytics/
+├── .github/
+│   └── workflows/
+│       └── ci.yml           # GitHub Actions CI (runs data_audit.py & pytest on push/PR)
 ├── data/
-│   ├── raw/                 # Unmodified original downloads (UNAIDS xlsx, zip, WB csv, WHO csv)
+│   ├── raw/                 # Unmodified original downloads (UNAIDS xlsx & zip, WB csv, WHO csv)
 │   ├── processed/           # Cleaned master CSVs and SQLite surveillance database
 │   │   ├── hiv_surveillance.db
 │   │   ├── hiv_epidemiology_master_1990_2025.csv
+│   │   ├── southeast_asia_hiv_longitudinal_1990_2025.csv
 │   │   ├── southeast_asia_hiv_panel_2010_2025.csv
 │   │   └── regional_global_benchmarks_1990_2025.csv
 │   └── metadata/            # Data dictionary, source inventory, country crosswalk
@@ -79,28 +85,29 @@ hiv-trend-research/
 │   └── 04_run_queries.py    # Query execution and report exporter
 ├── src/
 │   ├── acquisition/         # Automated download pipelines (download_data.py)
-│   ├── cleaning/            # Parsing, inequality thresholding, harmonization
-│   ├── validation/          # Automated data quality audit suite
+│   ├── cleaning/            # Parsing, inequality thresholding, harmonization, metadata
+│   ├── validation/          # Internal & WHO-vs-UNAIDS cross-source audit (data_audit.py)
 │   ├── analysis/            # Trend decomposition, cascade, and econometric modeling
 │   ├── visualization/       # Publication figure generation (300 DPI)
 │   └── create_presentation.py # 22-slide uncluttered widescreen PowerPoint deck generator
-├── figures/                 # Publication-ready figures (PNG, 300 DPI)
-├── notebooks/               # Jupyter research notebook walkthrough
+├── figures/                 # 6 publication-ready figures (PNG, 300 DPI)
+├── notebooks/               # Executed Jupyter research notebook & generator script
+│   ├── create_notebook.py
 │   └── hiv_epidemiology_research.ipynb
-├── reports/                 # Scientific research report, SQL exports, audit logs
+├── reports/                 # Scientific research report, SQL exports, cross-source audit logs
 │   ├── research_report.md
-│   ├── hiv_epidemiology_research_briefing.pptx
 │   ├── data_quality_audit.md
 │   ├── analysis_tables/
 │   └── sql_results/
 ├── dashboard/               # Interactive Streamlit surveillance dashboard
 │   └── app.py
-├── tests/                   # Pytest test suite (test_data_pipeline.py)
-├── docs/                    # Research study protocol and PowerPoint presentation
+├── tests/                   # Pytest test suite (test_data_pipeline.py, 12 tests)
+├── docs/                    # Research study protocol and 22-slide PowerPoint presentation
 │   ├── study_protocol.md
 │   └── presentation/
 │       └── hiv_epidemiology_research_briefing.pptx
-├── requirements.txt         # Pinned Python dependencies
+├── LICENSE                  # MIT License
+├── requirements.txt         # Pinned Python dependencies (==)
 └── README.md                # Project documentation and reproduction manual
 ```
 

@@ -1,0 +1,30 @@
+name: CI — Data Pipeline & Epidemiological Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy matplotlib plotly statsmodels scipy openpyxl requests streamlit python-pptx pytest
+
+      - name: Run data quality & cross-source reconciliation audit
+        run: python src/validation/data_audit.py
+
+      - name: Run Pytest unit & integration test suite
+        run: pytest tests/test_data_pipeline.py -v

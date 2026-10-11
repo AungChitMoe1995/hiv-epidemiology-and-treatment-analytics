@@ -125,13 +125,44 @@ def test_all_6_figures_exist():
         assert os.path.getsize(fpath) > 100_000, f"Figure too small: {fname}"
 
 def test_powerpoint_presentation():
-    """Verify the 22-slide uncluttered widescreen PowerPoint research briefing exists in both locations."""
+    """Verify the single canonical 22-slide widescreen PowerPoint research briefing exists."""
     from pptx import Presentation
-    for pptx_path in [
-        os.path.join(BASE_DIR, 'docs', 'presentation', 'hiv_epidemiology_research_briefing.pptx'),
-        os.path.join(BASE_DIR, 'reports', 'hiv_epidemiology_research_briefing.pptx')
-    ]:
-        assert os.path.exists(pptx_path)
-        prs = Presentation(pptx_path)
-        assert len(prs.slides) == 22
+    pptx_path = os.path.join(BASE_DIR, 'docs', 'presentation', 'hiv_epidemiology_research_briefing.pptx')
+    assert os.path.exists(pptx_path)
+    prs = Presentation(pptx_path)
+    assert len(prs.slides) == 22
+
+def test_who_gho_cross_source_reconciliation():
+    """Verify 100% 1:1 numerical agreement between all 4 WHO GHO raw feeds and UNAIDS master dataset."""
+    master = pd.read_csv(os.path.join(PROCESSED_DIR, 'hiv_epidemiology_master_1990_2025.csv'))
+    feeds = [
+        ('who_gho_art_coverage.csv', 'art_coverage_pct'),
+        ('who_gho_hiv_deaths.csv', 'aids_deaths'),
+        ('who_gho_new_infections.csv', 'new_infections'),
+        ('who_gho_plhiv.csv', 'plhiv'),
+    ]
+    total_matched = 0
+    for fname, col in feeds:
+        w = pd.read_csv(os.path.join(RAW_DIR, fname))
+        w = w[w['SpatialDimType'] == 'COUNTRY'].dropna(subset=['NumericValue'])
+        m = master[['iso3', 'year', col]].dropna(subset=[col])
+        j = pd.merge(m, w[['SpatialDim', 'TimeDim', 'NumericValue']], left_on=['iso3', 'year'], right_on=['SpatialDim', 'TimeDim'])
+        assert len(j) > 2000
+        diff = (j[col] - j['NumericValue']).abs()
+        assert diff.max() == 0.0
+        total_matched += len(j)
+    assert total_matched == 13191
+
+def test_notebook_executed_outputs():
+    """Verify all code cells in notebooks/hiv_epidemiology_research.ipynb have executed outputs."""
+    import json
+    nb_path = os.path.join(BASE_DIR, 'notebooks', 'hiv_epidemiology_research.ipynb')
+    assert os.path.exists(nb_path)
+    with open(nb_path, encoding='utf-8') as f:
+        nb = json.load(f)
+    code_cells = [c for c in nb['cells'] if c['cell_type'] == 'code']
+    assert len(code_cells) == 6
+    for idx, cell in enumerate(code_cells, 1):
+        assert cell.get('execution_count') == idx
+        assert len(cell.get('outputs', [])) >= 1
 

@@ -13,11 +13,9 @@ Design Principles (Anti-Clutter Executive Standard):
 
 Outputs:
   - docs/presentation/hiv_epidemiology_research_briefing.pptx
-  - reports/hiv_epidemiology_research_briefing.pptx
 """
 
 import os
-import shutil
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
@@ -773,13 +771,10 @@ def create_deck(base_dir: str):
     pf22.text = f"Thank You  •  Clinical & Epidemiological Research Portfolio  •  Slide {TOTAL_SLIDES} of {TOTAL_SLIDES}"
     pf22.font.size = Pt(14); pf22.font.bold = True; pf22.font.color.rgb = WHITE
 
-    # Save outputs
+    # Save canonical output
     out_pres = os.path.join(pres_dir, "hiv_epidemiology_research_briefing.pptx")
-    out_rep = os.path.join(reports_dir, "hiv_epidemiology_research_briefing.pptx")
     prs.save(out_pres)
-    shutil.copy2(out_pres, out_rep)
     print(f"Saved presentation -> {out_pres} ({os.path.getsize(out_pres):,} bytes)")
-    print(f"Copied presentation -> {out_rep} ({os.path.getsize(out_rep):,} bytes)")
 
 
 if __name__ == "__main__":
