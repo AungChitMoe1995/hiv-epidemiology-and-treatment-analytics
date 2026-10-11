@@ -1,0 +1,14 @@
+iso3,country_name,un_m49,region,income_group,analysis_role
+MMR,Myanmar,104,Southeast Asia,Lower middle income,Core Target
+THA,Thailand,764,Southeast Asia,Upper middle income,Regional Leader
+VNM,Viet Nam,704,Southeast Asia,Lower middle income,Harm Reduction Success
+KHM,Cambodia,116,Southeast Asia,Lower middle income,Cascade Benchmark (95% ART)
+IDN,Indonesia,360,Southeast Asia,Upper middle income,High Burden / Treatment Gap
+MYS,Malaysia,458,Southeast Asia,Upper middle income,Concentrated Epidemic
+PHL,Philippines,608,Southeast Asia,Lower middle income,Counter-Epidemic Outbreak
+LAO,Lao PDR,418,Southeast Asia,Lower middle income,Low-Burden Comparator
+TLS,Timor-Leste,626,Southeast Asia,Lower middle income,Small Island Comparator
+SGP,Singapore,702,Southeast Asia,High income,High-Income Benchmark
+BRN,Brunei Darussalam,096,Southeast Asia,High income,Suppressed (Descriptive only)
+UNAAP,Asia and the Pacific,N/A,Regional Aggregate,Aggregate,Regional Benchmark
+03M49WLD,Global Total,001,Global Aggregate,Aggregate,Global Benchmark

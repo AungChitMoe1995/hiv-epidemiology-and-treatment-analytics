@@ -1,0 +1,25 @@
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+env/
+.env
+
+# Stage 1 temporary reconnaissance and unzipped 332 MB bulk dump
+# (Verified raw files are preserved in data/raw/)
+data/discovery/
+test_apis.py
+
+# Personal CV & interview prep notes (local only, not for public repo)
+docs/cv_project_description.md
+
+# OS / IDE artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+~$*.pptx
+~$*.xlsx

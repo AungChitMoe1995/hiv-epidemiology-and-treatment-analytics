@@ -1,0 +1,6 @@
+model_name,dependent_variable,independent_variable,coefficient,robust_std_err,t_statistic,p_value,ci_lower_95,ci_upper_95,r_squared_within,n_observations,n_countries
+Model 1: Contemporaneous ART,mortality_rate_in_plhiv_pct,art_coverage_pct,-0.0514,0.0036,-14.344,0.0,-0.0584,-0.0443,0.6868,144,9
+Model 2: 1-Year Lagged ART,mortality_rate_in_plhiv_pct,art_coverage_lag1,-0.0491,0.0035,-14.202,0.0,-0.0558,-0.0423,0.6874,135,9
+Model 3: 2-Year Lagged ART,mortality_rate_in_plhiv_pct,art_coverage_lag2,-0.0462,0.0035,-13.302,0.0,-0.053,-0.0394,0.6674,126,9
+Model 4: Lagged ART + Macroeconomic Control,mortality_rate_in_plhiv_pct,art_coverage_lag1,-0.0624,0.0049,-12.83,0.0,-0.072,-0.0529,0.7307,135,9
+Model 4: Lagged ART + Macroeconomic Control,mortality_rate_in_plhiv_pct,log_gdp_pc_ppp,1.8376,0.5688,3.231,0.00123,0.7229,2.9524,0.7307,135,9

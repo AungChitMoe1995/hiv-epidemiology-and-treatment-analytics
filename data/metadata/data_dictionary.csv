@@ -1,0 +1,30 @@
+variable_name,entity_type,data_type,unit,definition,source
+iso3,Identifier,VARCHAR(3),ISO-3166-1 alpha-3,Standard 3-letter country code,ISO/UNAIDS
+country_name,Identifier,VARCHAR(100),Text,Official country or territory name,UNAIDS
+year,Temporal,INTEGER,Calendar Year,Observation year (1990-2025),UNAIDS/WB
+plhiv,Outcome,DOUBLE,Count,Estimated total people of all ages living with HIV,UNAIDS
+plhiv_low,Uncertainty,DOUBLE,Count,Lower bound of 95% uncertainty interval for PLHIV,UNAIDS
+plhiv_high,Uncertainty,DOUBLE,Count,Upper bound of 95% uncertainty interval for PLHIV,UNAIDS
+adult_prevalence_pct,Outcome,DOUBLE,Percentage (%),Estimated HIV prevalence among adults aged 15-49,UNAIDS
+adult_prevalence_low,Uncertainty,DOUBLE,Percentage (%),Lower bound of 95% uncertainty interval for adult prevalence,UNAIDS
+adult_prevalence_high,Uncertainty,DOUBLE,Percentage (%),Upper bound of 95% uncertainty interval for adult prevalence,UNAIDS
+aids_deaths,Primary Outcome,DOUBLE,Count,Estimated annual deaths directly attributed to AIDS,UNAIDS
+aids_deaths_low,Uncertainty,DOUBLE,Count,Lower bound of 95% uncertainty interval for AIDS deaths,UNAIDS
+aids_deaths_high,Uncertainty,DOUBLE,Count,Upper bound of 95% uncertainty interval for AIDS deaths,UNAIDS
+new_infections,Secondary Outcome,DOUBLE,Count,Estimated annual newly acquired HIV infections (all ages),UNAIDS
+new_infections_low,Uncertainty,DOUBLE,Count,Lower bound of 95% uncertainty interval for new infections,UNAIDS
+new_infections_high,Uncertainty,DOUBLE,Count,Upper bound of 95% uncertainty interval for new infections,UNAIDS
+incidence_rate_per1000,Outcome,DOUBLE,Rate per 1000,HIV incidence per 1000 uninfected population,UNAIDS
+art_coverage_pct,Primary Exposure,DOUBLE,Percentage (%),Percentage of people living with HIV on antiretroviral therapy,UNAIDS
+art_coverage_low,Uncertainty,DOUBLE,Percentage (%),Lower bound of 95% uncertainty interval for ART coverage,UNAIDS
+art_coverage_high,Uncertainty,DOUBLE,Percentage (%),Upper bound of 95% uncertainty interval for ART coverage,UNAIDS
+diagnosed_1st95_pct,Cascade Metric,DOUBLE,Percentage (%),Percentage of PLHIV who know their status (1st 95 target),UNAIDS
+on_art_2nd95_pct,Cascade Metric,DOUBLE,Percentage (%),Percentage of diagnosed PLHIV on ART (2nd 95 target),UNAIDS
+virally_suppressed_3rd95_pct,Cascade Metric,DOUBLE,Percentage (%),Percentage of people on ART with suppressed viral load (3rd 95 target),UNAIDS
+treatment_gap_pct,Derived Exposure,DOUBLE,Percentage (%),100% - art_coverage_pct,Derived
+unreached_plhiv,Derived Exposure,DOUBLE,Count,plhiv * (1 - art_coverage_pct / 100),Derived
+mortality_rate_in_plhiv_pct,Derived Outcome,DOUBLE,Percentage (%),(aids_deaths / plhiv) * 100,Derived
+aids_mortality_rate_per100k_pop,Derived Outcome,DOUBLE,"Rate per 100,000","(aids_deaths / population_total) * 100,000",Derived
+gdp_per_capita_usd,Covariate,DOUBLE,Current US$,Gross Domestic Product per capita in current US$,World Bank (NY.GDP.PCAP.CD)
+gdp_per_capita_ppp,Covariate,DOUBLE,Constant 2021 Int$,GDP per capita PPP in constant 2021 international $,World Bank (NY.GDP.PCAP.PP.KD)
+population_total,Demographic,DOUBLE,Count,Total midyear national population,World Bank (SP.POP.TOTL)
