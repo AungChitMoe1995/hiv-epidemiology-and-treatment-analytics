@@ -28,7 +28,7 @@ ORDER BY year ASC;
 
 -- --------------------------------------------------------------------
 -- QUERY 2: SOUTHEAST ASIA MILESTONE COMPARISON (2010 vs 2015 vs 2020 vs 2025)
--- Multi-year cross-sectional comparison across all 10 SEA nations and benchmarks.
+-- Multi-year cross-sectional comparison across all 11 SEA countries and benchmarks.
 -- --------------------------------------------------------------------
 SELECT 
     country_name,
@@ -102,7 +102,7 @@ SELECT
     on_art_2nd95_pct AS pct_on_art_of_diagnosed_2nd95,
     virally_suppressed_3rd95_pct AS pct_suppressed_of_on_art_3rd95,
     art_coverage_pct AS overall_art_coverage_pct,
-    ROUND((diagnosed_1st95_pct * on_art_2nd95_pct * virally_suppressed_3rd95_pct) / 10000.0, 1) AS pop_level_viral_suppression_pct
+    virally_suppressed_all_pct AS pop_level_viral_suppression_pct
 FROM v_southeast_asia_surveillance
 WHERE year = 2025
   AND (is_southeast_asia = 1 OR iso3 IN ('UNAAP', '03M49WLD'))
@@ -131,7 +131,7 @@ ORDER BY unreached_plhiv_count DESC;
 
 -- --------------------------------------------------------------------
 -- QUERY 6: SOCIOECONOMIC WEALTH VS. ART COVERAGE & MORTALITY (2025)
--- Investigates whether national GDP per capita dictates treatment coverage.
+-- Describes same-year national GDP and ART coverage.
 -- --------------------------------------------------------------------
 SELECT 
     country_name,
@@ -151,7 +151,7 @@ ORDER BY gdp_pc_ppp_2021int_usd DESC;
 
 
 -- --------------------------------------------------------------------
--- QUERY 7: LAGGED ART IMPACT ON AIDS-RELATED MORTALITY (PANEL STRUCTURE)
+-- QUERY 7: LAGGED ART ASSOCIATION ON AIDS-RELATED MORTALITY (PANEL STRUCTURE)
 -- Constructs 1-year and 2-year lagged ART coverage to analyze subsequent mortality.
 -- --------------------------------------------------------------------
 SELECT 

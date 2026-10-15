@@ -36,7 +36,7 @@ def parse_num_val(val):
     Parses messy surveillance numeric strings:
     - Removes whitespace ('12 000' -> 12000.0)
     - Removes commas ('12,000' -> 12000.0)
-    - Handles bounded low/high values ('<100' -> 100.0, '<0.1' -> 0.1, '>95' -> 95.0, '>98' -> 98.0)
+    - Censored values (<100, >95) remain missing numerically; source, qualifier and threshold columns preserve their meaning
     - Handles million suffixes ('32.5 m' -> 32500000.0, '6.0 m' -> 6000000.0)
     - Replaces '...' (suppressed) or empty with NaN
     """
@@ -45,8 +45,8 @@ def parse_num_val(val):
     s = str(val).strip()
     if s in ['...', '', 'nan', 'None', '-']:
         return np.nan
-    if s.startswith('<') or s.startswith('>'):
-        s = s[1:].strip()
+    if s.startswith(('<', '>')):
+        return np.nan  # Censored bounds are not exact point estimates.
     s = s.replace(' ', '').replace(',', '')
     multiplier = 1.0
     if s.lower().endswith('m'):
@@ -106,7 +106,11 @@ def clean_unaids_estimates(xlsx_path: str) -> pd.DataFrame:
     # Parse all numeric columns
     numeric_cols = [c for c in df_clean.columns if c not in ['year', 'iso3', 'country_name']]
     for c in numeric_cols:
-        df_clean[c] = df_clean[c].apply(parse_num_val)
+        raw = df_clean[c].fillna('...').astype(str).str.strip()
+        df_clean[c + '_source'] = raw
+        df_clean[c + '_qualifier'] = raw.map(lambda v: v[0] if v.startswith(('<', '>')) else ('missing' if pd.isna(parse_num_val(v)) else '='))
+        df_clean[c + '_threshold'] = raw.map(lambda v: parse_num_val(v[1:]) if v.startswith(('<', '>')) else np.nan)
+        df_clean[c] = raw.map(parse_num_val)
         
     logger.info(f"Cleaned Estimates: {len(df_clean):,} records, {df_clean['iso3'].nunique()} entities, years {df_clean['year'].min()}-{df_clean['year'].max()}.")
     return df_clean
@@ -132,6 +136,8 @@ def clean_unaids_cascade(xlsx_path: str) -> pd.DataFrame:
         34: 'on_art_2nd95_low',
         35: 'on_art_2nd95_high',
         48: 'virally_suppressed_all_pct',
+        49: 'virally_suppressed_all_low',
+        50: 'virally_suppressed_all_high',
         63: 'virally_suppressed_3rd95_pct',
         64: 'virally_suppressed_3rd95_low',
         65: 'virally_suppressed_3rd95_high'
@@ -143,7 +149,11 @@ def clean_unaids_cascade(xlsx_path: str) -> pd.DataFrame:
     
     numeric_cols = [c for c in df_clean.columns if c not in ['year', 'iso3']]
     for c in numeric_cols:
-        df_clean[c] = df_clean[c].apply(parse_num_val)
+        raw = df_clean[c].fillna('...').astype(str).str.strip()
+        df_clean[c + '_source'] = raw
+        df_clean[c + '_qualifier'] = raw.map(lambda v: v[0] if v.startswith(('<', '>')) else ('missing' if pd.isna(parse_num_val(v)) else '='))
+        df_clean[c + '_threshold'] = raw.map(lambda v: parse_num_val(v[1:]) if v.startswith(('<', '>')) else np.nan)
+        df_clean[c] = raw.map(parse_num_val)
         
     logger.info(f"Cleaned Cascade: {len(df_clean):,} records, {df_clean['iso3'].nunique()} entities, years {df_clean['year'].min()}-{df_clean['year'].max()}.")
     return df_clean
@@ -218,6 +228,10 @@ def execute_pipeline():
     df_master['art_coverage_lag2'] = df_master.groupby('iso3')['art_coverage_pct'].shift(2)
     df_master['aids_deaths_lag1'] = df_master.groupby('iso3')['aids_deaths'].shift(1)
     
+    for lag in [1, 2]:
+        previous_year = df_master.groupby('iso3')['year'].shift(lag)
+        df_master.loc[df_master['year'].sub(previous_year).ne(lag), f'art_coverage_lag{lag}'] = np.nan
+
     # Regional Classification
     df_master['is_southeast_asia'] = df_master['iso3'].isin(SEA_COUNTRIES).astype(int)
     df_master['is_benchmark'] = df_master['iso3'].isin(BENCHMARKS).astype(int)
@@ -225,7 +239,7 @@ def execute_pipeline():
     # 5. Partition Datasets
     # Master Global Dataset (all entities)
     master_out = os.path.join(PROCESSED_DIR, 'hiv_epidemiology_master_1990_2025.csv')
-    df_master.to_csv(master_out, index=False)
+    df_master.to_csv(master_out, index=False, lineterminator='\n')
     logger.info(f"Saved Global Master dataset -> {master_out} ({len(df_master):,} rows).")
     
     # Southeast Asia High-Resolution Panel (2010-2025)
@@ -234,19 +248,19 @@ def execute_pipeline():
         (df_master['year'] >= 2010)
     ].copy()
     sea_out = os.path.join(PROCESSED_DIR, 'southeast_asia_hiv_panel_2010_2025.csv')
-    sea_panel.to_csv(sea_out, index=False)
+    sea_panel.to_csv(sea_out, index=False, lineterminator='\n')
     logger.info(f"Saved Southeast Asia Panel -> {sea_out} ({len(sea_panel):,} rows).")
     
     # Southeast Asia Long-Term Panel (1990-2025)
     sea_long = df_master[df_master['iso3'].isin(SEA_COUNTRIES)].copy()
     sea_long_out = os.path.join(PROCESSED_DIR, 'southeast_asia_hiv_longitudinal_1990_2025.csv')
-    sea_long.to_csv(sea_long_out, index=False)
+    sea_long.to_csv(sea_long_out, index=False, lineterminator='\n')
     logger.info(f"Saved Southeast Asia Long-Term Panel -> {sea_long_out} ({len(sea_long):,} rows).")
     
     # Benchmarks (1990-2025)
     bench_panel = df_master[df_master['iso3'].isin(BENCHMARKS)].copy()
     bench_out = os.path.join(PROCESSED_DIR, 'regional_global_benchmarks_1990_2025.csv')
-    bench_panel.to_csv(bench_out, index=False)
+    bench_panel.to_csv(bench_out, index=False, lineterminator='\n')
     logger.info(f"Saved Benchmarks -> {bench_out} ({len(bench_panel):,} rows).")
     
     logger.info("=== Data Cleaning & Harmonization Completed Successfully ===")

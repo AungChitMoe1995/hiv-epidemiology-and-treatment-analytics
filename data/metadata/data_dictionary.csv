@@ -23,8 +23,12 @@ on_art_2nd95_pct,Cascade Metric,DOUBLE,Percentage (%),Percentage of diagnosed PL
 virally_suppressed_3rd95_pct,Cascade Metric,DOUBLE,Percentage (%),Percentage of people on ART with suppressed viral load (3rd 95 target),UNAIDS
 treatment_gap_pct,Derived Exposure,DOUBLE,Percentage (%),100% - art_coverage_pct,Derived
 unreached_plhiv,Derived Exposure,DOUBLE,Count,plhiv * (1 - art_coverage_pct / 100),Derived
-mortality_rate_in_plhiv_pct,Derived Outcome,DOUBLE,Percentage (%),(aids_deaths / plhiv) * 100,Derived
+mortality_rate_in_plhiv_pct,Derived Outcome,DOUBLE,Percentage (%),"Annual estimated AIDS deaths / estimated PLHIV *100. Descriptive ratio, not cohort fatality risk.",Derived
 aids_mortality_rate_per100k_pop,Derived Outcome,DOUBLE,"Rate per 100,000","(aids_deaths / population_total) * 100,000",Derived
 gdp_per_capita_usd,Covariate,DOUBLE,Current US$,Gross Domestic Product per capita in current US$,World Bank (NY.GDP.PCAP.CD)
 gdp_per_capita_ppp,Covariate,DOUBLE,Constant 2021 Int$,GDP per capita PPP in constant 2021 international $,World Bank (NY.GDP.PCAP.PP.KD)
 population_total,Demographic,DOUBLE,Count,Total midyear national population,World Bank (SP.POP.TOTL)
+*_source,,,,"Original UNAIDS text, including <, > and suppression markers",
+*_qualifier,,,,= exact rounded estimate; < or > censored; missing unavailable,
+*_threshold,,,,Published censoring boundary only. Numeric point estimate remains missing.,
+virally_suppressed_all_pct,,,,"Direct UNAIDS estimate: suppressed viral load among all PLHIV, not a product of rounded conditional stages",

@@ -64,10 +64,10 @@ def execute_all_queries():
                 print(f"... [{len(df) - 10} more rows]")
                 
             out_csv = os.path.join(RESULTS_DIR, f"{clean_name}.csv")
-            df.to_csv(out_csv, index=False)
+            df.to_csv(out_csv, index=False,lineterminator='\n')
             logger.info(f"Saved results -> {out_csv}")
         except Exception as e:
-            logger.error(f"Error executing {name}: {e}")
+            raise RuntimeError(f"Error executing {name}") from e
             
     conn.close()
     logger.info("All analytical SQL queries executed successfully.")

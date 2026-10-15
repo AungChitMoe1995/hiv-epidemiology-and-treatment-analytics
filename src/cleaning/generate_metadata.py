@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-METADATA_DIR = 'data/metadata'
+METADATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'metadata'))
 os.makedirs(METADATA_DIR, exist_ok=True)
 
 # 1. Source Inventory
@@ -24,7 +24,7 @@ source_inv = [
         'file_format': 'XLSX',
         'source_url': 'https://www.unaids.org/sites/default/files/2026-07/HIV_estimates_from_1990-to-present_1.xlsx',
         'time_coverage': '1990-2025 (Estimates); 2010-2025 (95-95-95 Cascade)',
-        'geo_coverage': 'Global (184 countries + regional/global benchmarks)',
+        'geo_coverage': '184 entities including countries/territories and aggregates',
         'data_type': 'Modeled estimates with 95% uncertainty bounds',
         'citation': 'UNAIDS (2026). HIV Estimates with Uncertainty Bounds 1990-present.'
     },
@@ -51,7 +51,7 @@ source_inv = [
         'citation': 'World Bank (2026). World Development Indicators database.'
     }
 ]
-pd.DataFrame(source_inv).to_csv(os.path.join(METADATA_DIR, 'source_inventory.csv'), index=False)
+pd.DataFrame(source_inv).to_csv(os.path.join(METADATA_DIR, 'source_inventory.csv'), index=False,lineterminator='\n')
 
 # 2. Data Dictionary
 data_dict = [
@@ -85,7 +85,7 @@ data_dict = [
     {'variable_name': 'gdp_per_capita_ppp', 'entity_type': 'Covariate', 'data_type': 'DOUBLE', 'unit': 'Constant 2021 Int$', 'definition': 'GDP per capita PPP in constant 2021 international $', 'source': 'World Bank (NY.GDP.PCAP.PP.KD)'},
     {'variable_name': 'population_total', 'entity_type': 'Demographic', 'data_type': 'DOUBLE', 'unit': 'Count', 'definition': 'Total midyear national population', 'source': 'World Bank (SP.POP.TOTL)'}
 ]
-pd.DataFrame(data_dict).to_csv(os.path.join(METADATA_DIR, 'data_dictionary.csv'), index=False)
+pd.DataFrame(data_dict).to_csv(os.path.join(METADATA_DIR, 'data_dictionary.csv'), index=False,lineterminator='\n')
 
 # 3. Country Crosswalk
 country_crosswalk = [
@@ -103,6 +103,16 @@ country_crosswalk = [
     {'iso3': 'UNAAP', 'country_name': 'Asia and the Pacific', 'un_m49': 'N/A', 'region': 'Regional Aggregate', 'income_group': 'Aggregate', 'analysis_role': 'Regional Benchmark'},
     {'iso3': '03M49WLD', 'country_name': 'Global Total', 'un_m49': '001', 'region': 'Global Aggregate', 'income_group': 'Aggregate', 'analysis_role': 'Global Benchmark'}
 ]
-pd.DataFrame(country_crosswalk).to_csv(os.path.join(METADATA_DIR, 'country_crosswalk.csv'), index=False)
+pd.DataFrame(country_crosswalk).to_csv(os.path.join(METADATA_DIR, 'country_crosswalk.csv'), index=False,lineterminator='\n')
 
 print("Generated metadata files successfully in data/metadata/.")
+
+# Clarify derived fields and preserve censoring semantics in the generated dictionary.
+dictionary_path=os.path.join(METADATA_DIR,'data_dictionary.csv')
+dictionary=pd.read_csv(dictionary_path)
+dictionary.loc[dictionary.variable_name.eq('mortality_rate_in_plhiv_pct'),'definition']='Annual estimated AIDS deaths / estimated PLHIV *100. Descriptive ratio, not cohort fatality risk.'
+extra=pd.DataFrame([dict(variable_name='*_source',definition='Original UNAIDS text, including <, > and suppression markers'),dict(variable_name='*_qualifier',definition='= exact rounded estimate; < or > censored; missing unavailable'),dict(variable_name='*_threshold',definition='Published censoring boundary only. Numeric point estimate remains missing.'),dict(variable_name='virally_suppressed_all_pct',definition='Direct UNAIDS estimate: suppressed viral load among all PLHIV, not a product of rounded conditional stages')])
+pd.concat([dictionary,extra],ignore_index=True).to_csv(dictionary_path,index=False,lineterminator='\n')
+p=os.path.join(METADATA_DIR,'country_crosswalk.csv');c=pd.read_csv(p)
+c.loc[c.iso3.isin(['MMR','THA','VNM','KHM','IDN','MYS','PHL','LAO','TLS','SGP','BRN']),'analysis_role']='Southeast Asia focus country'
+c.to_csv(p,index=False,lineterminator='\n')

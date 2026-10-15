@@ -1,60 +1,88 @@
-# DATA QUALITY & CROSS-SOURCE REPRODUCIBILITY AUDIT REPORT
+# Data quality audit
 
-**Project:** HIV Epidemiological Transitions and Treatment Disparities in Southeast Asia (1990–2025)
-**Audit Status:** ALL INTERNAL & CROSS-SOURCE CHECKS PASSED
+58 checks passed. 6,624 entity-years across 184 entities (countries/territories and aggregates).
 
-## 1. Table Dimensions & Row Verification
+Southeast Asia: all 11 countries, 396 country-years, 176 rows from 2010 to 2025.
 
-| Table Name | Verified Row Count | Status |
-| :--- | :---: | :--- |
-| `dim_country` | 184 | Verified |
-| `fact_hiv_estimates` | 6,624 | Verified |
-| `fact_treatment_cascade` | 2,944 | Verified |
-| `fact_socioeconomic` | 6,624 | Verified |
+## Source consistency
 
-## 2. Relational & Key Integrity
+9,814 uncensored country-year-indicator overlaps agree with the stored WHO feeds. This checks snapshot consistency only. WHO disseminates UNAIDS estimates and is not independent outcome validation. Unmatched rows and source hashes appear in the CSV and audit JSON. The bulk ZIP is an archived supplemental source, not a second independent validation dataset.
 
-- **Primary Key Duplicates on (iso3, year):** 0 detected (PASSED)
-- **Foreign Key Orphans:** 0 detected (PASSED)
+## Missing and censored values in 2025
 
-## 3. Epidemiological Range Checks
+| iso3   | country_name      | aids_deaths_source   | art_coverage_pct_source   | virally_suppressed_all_pct_source   |
+|:-------|:------------------|:---------------------|:--------------------------|:------------------------------------|
+| BRN    | Brunei Darussalam | ...                  | ...                       | ...                                 |
+| IDN    | Indonesia         | 18 000               | 48                        | 45                                  |
+| KHM    | Cambodia          | 1000                 | 95                        | 93                                  |
+| LAO    | Lao PDR           | <500                 | 64                        | 63                                  |
+| MMR    | Myanmar           | 4400                 | 73                        | 70                                  |
+| MYS    | Malaysia          | 2000                 | 63                        | 55                                  |
+| PHL    | Philippines       | 2700                 | 41                        | 40                                  |
+| SGP    | Singapore         | <100                 | ...                       | ...                                 |
+| THA    | Thailand          | 8400                 | 82                        | 81                                  |
+| TLS    | Timor-Leste       | <100                 | 66                        | 46                                  |
+| VNM    | Viet Nam          | 4100                 | 75                        | 72                                  |
 
-- **Invalid ART Coverage (< 0% or > 100%):** 0 (PASSED)
-- **Invalid Prevalence (< 0% or > 100%):** 0 (PASSED)
-- **Negative Epidemiological Counts:** 0 (PASSED)
+Censored values retain source text, threshold, and qualifier. Numeric point fields are missing for censored/suppressed values. No zero, midpoint, or threshold is substituted in the primary analysis.
 
-## 4. Southeast Asia Focus Group Completeness (2010–2025)
+## Audit checks
 
-- **Total Country-Year Observations:** 176
-- **Missing AIDS Deaths:** 16 (All 16 observations from Brunei Darussalam due to official UNAIDS suppression)
-- **Missing ART Coverage:** 17 (16 from Brunei Darussalam + 1 from Singapore 2010)
-- **Missing GDP per Capita:** 0 (0.0%)
-
-## 5. Python vs. SQLite Internal Numerical Reconciliation
-
-- **Python Total Myanmar Deaths (2010–2025):** 110,400
-- **SQL Total Myanmar Deaths (2010–2025):** 110,400
-- **Internal Reconciliation Discrepancy:** 0.000000 (EXACT AGREEMENT)
-
-## 6. Cross-Source Validation: WHO Global Health Observatory vs. UNAIDS 2026
-
-All four raw WHO GHO OData CSV feeds in `data/raw/who_gho_*.csv` were programmatically joined by `(iso3, year)` against `hiv_epidemiology_master_1990_2025.csv` across **13,191 country-year-indicator observations** (exported to `reports/analysis_tables/who_unaids_cross_validation.csv`):
-
-| WHO Raw File | WHO Indicator Code | UNAIDS Variable | WHO Raw Rows | Matched Country-Years | Exact 1:1 Matches | Match Rate | Max Abs Diff | Pearson $r$ |
-| :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `who_gho_art_coverage.csv` | `HIV_ARTCOVERAGE` | `art_coverage_pct` | 3,848 | 2,265 | 2,265 | **100.00%** | 0.0 | 1.000000 |
-| `who_gho_hiv_deaths.csv` | `HIV_0000000006` | `aids_deaths` | 3,788 | 3,606 | 3,606 | **100.00%** | 0.0 | 1.000000 |
-| `who_gho_new_infections.csv` | `HIV_0000000026` | `new_infections` | 3,792 | 3,610 | 3,610 | **100.00%** | 0.0 | 1.000000 |
-| `who_gho_plhiv.csv` | `HIV_0000000001` | `plhiv` | 3,892 | 3,710 | 3,710 | **100.00%** | 0.0 | 1.000000 |
-
-## 7. Bulk Archive Verification: `Estimates_2026_en.zip` vs. Master Dataset
-
-- **Archive File:** `data/raw/Estimates_2026_en.zip` (22.11 MiB / 23.19 MB compressed)
-- **Embedded CSV:** `Estimates_2026_en.csv` (331.91 MiB / 348.03 MB uncompressed; **2,197,290 rows**)
-
-| Myanmar (MMR) 2025 Indicator | Master Dataset Value | Bulk CSV `Formatted` | Bulk CSV Unrounded `Data value` | Status |
-| :--- | :---: | :---: | :---: | :--- |
-| `aids_deaths` | 4,400.0 | 4,400.0 | 4,426.30 | **EXACT MATCH** |
-| `plhiv` | 310,000.0 | 310,000.0 | 306,216.91 | **EXACT MATCH** |
-| `new_infections` | 9,500.0 | 9,500.0 | 9,512.47 | **EXACT MATCH** |
-| `art_coverage_pct` | 73.0 | 73.0 | 72.58 | **EXACT MATCH** |
+- Unique entity-year keys
+- Complete 1990-2025 grid
+- 11 Southeast Asian country grids
+- Censor handling: adult_prevalence_pct
+- Censor handling: adult_prevalence_low
+- Censor handling: adult_prevalence_high
+- Censor handling: aids_deaths
+- Censor handling: aids_deaths_low
+- Censor handling: aids_deaths_high
+- Censor handling: child_aids_deaths
+- Censor handling: adult_aids_deaths
+- Censor handling: child_plhiv
+- Censor handling: women_plhiv
+- Censor handling: adult_plhiv
+- Censor handling: plhiv
+- Censor handling: plhiv_low
+- Censor handling: plhiv_high
+- Censor handling: adult_incidence_per1000
+- Censor handling: adult_incidence_low
+- Censor handling: adult_incidence_high
+- Censor handling: incidence_rate_per1000
+- Censor handling: incidence_rate_low
+- Censor handling: incidence_rate_high
+- Censor handling: new_infections
+- Censor handling: new_infections_low
+- Censor handling: new_infections_high
+- Censor handling: diagnosed_1st95_pct
+- Censor handling: diagnosed_1st95_low
+- Censor handling: diagnosed_1st95_high
+- Censor handling: art_coverage_pct
+- Censor handling: art_coverage_low
+- Censor handling: art_coverage_high
+- Censor handling: on_art_2nd95_pct
+- Censor handling: on_art_2nd95_low
+- Censor handling: on_art_2nd95_high
+- Censor handling: virally_suppressed_all_pct
+- Censor handling: virally_suppressed_all_low
+- Censor handling: virally_suppressed_all_high
+- Censor handling: virally_suppressed_3rd95_pct
+- Censor handling: virally_suppressed_3rd95_low
+- Censor handling: virally_suppressed_3rd95_high
+- Percentage range: art_coverage_pct
+- Percentage range: diagnosed_1st95_pct
+- Percentage range: on_art_2nd95_pct
+- Percentage range: virally_suppressed_all_pct
+- Percentage range: virally_suppressed_3rd95_pct
+- Nonnegative: plhiv
+- Ordered marginal limits: plhiv
+- Nonnegative: aids_deaths
+- Ordered marginal limits: aids_deaths
+- Nonnegative: new_infections
+- Ordered marginal limits: new_infections
+- SQLite integrity
+- No foreign key violations
+- SQL/CSV parity: aids_deaths
+- SQL/CSV parity: art_coverage_pct
+- SQL/CSV parity: unreached_plhiv
+- Four WHO feeds reconciled

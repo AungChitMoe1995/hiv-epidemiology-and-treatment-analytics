@@ -40,7 +40,7 @@ def analyze_myanmar_trends():
     mmr_summary['art_yoy_gain_pp'] = mmr_summary['art_coverage_pct'].diff()
     
     out_path = os.path.join(OUTPUT_DIR, 'myanmar_trajectory_summary.csv')
-    mmr_summary.to_csv(out_path, index=False)
+    mmr_summary.to_csv(out_path, index=False,lineterminator='\n')
     logger.info(f"Saved Myanmar trajectory summary -> {out_path}")
     return mmr_summary
 
@@ -93,7 +93,7 @@ def analyze_regional_changes():
             
     summary_df = pd.DataFrame(records).sort_values('pct_change_deaths')
     out_path = os.path.join(OUTPUT_DIR, 'regional_trend_summary_2010_2025.csv')
-    summary_df.to_csv(out_path, index=False)
+    summary_df.to_csv(out_path, index=False,lineterminator='\n')
     logger.info(f"Saved regional trend summary -> {out_path}")
     print(summary_df[['country_name', 'pct_change_deaths', 'pct_change_new_infections', 'art_gain_percentage_points']].to_string(index=False))
     return summary_df

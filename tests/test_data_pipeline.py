@@ -90,17 +90,22 @@ def test_lag_computation():
         assert tha.loc[i, 'art_coverage_lag1'] == tha.loc[i-1, 'art_coverage_pct']
 
 def test_cascade_upper_bounds_parsed():
-    """Verify >95 and >98 upper-bounded cascade values are parsed accurately."""
+    """Verify >95 and >98 censored cascade values retain labels and missing point estimates."""
     df = pd.read_csv(os.path.join(PROCESSED_DIR, 'southeast_asia_hiv_panel_2010_2025.csv'))
     khm_2025 = df[(df['iso3'] == 'KHM') & (df['year'] == 2025)].iloc[0]
     tha_2025 = df[(df['iso3'] == 'THA') & (df['year'] == 2025)].iloc[0]
     assert khm_2025['diagnosed_1st95_pct'] == 95.0
-    assert khm_2025['on_art_2nd95_pct'] == 98.0
-    assert khm_2025['virally_suppressed_3rd95_pct'] == 98.0
-    assert tha_2025['virally_suppressed_3rd95_pct'] == 98.0
+    assert pd.isna(khm_2025['on_art_2nd95_pct'])
+    assert khm_2025['on_art_2nd95_pct_qualifier'] == '>'
+    assert khm_2025['on_art_2nd95_pct_threshold'] == 98.0
+    assert pd.isna(khm_2025['virally_suppressed_3rd95_pct'])
+    assert khm_2025['virally_suppressed_3rd95_pct_qualifier'] == '>'
+    assert khm_2025['virally_suppressed_3rd95_pct_threshold'] == 98.0
+    assert pd.isna(tha_2025['virally_suppressed_3rd95_pct'])
+    assert tha_2025['virally_suppressed_3rd95_pct_source'] == '>98'
 
 def test_global_million_suffix_parsed():
-    """Verify 'm' million suffix values in Global and Asia-Pacific benchmarks are scaled to exact counts."""
+    """Verify 'm' million suffix values in Global and Asia-Pacific benchmarks are scaled to rounded counts."""
     df = pd.read_csv(os.path.join(PROCESSED_DIR, 'regional_global_benchmarks_1990_2025.csv'))
     wld_2025 = df[(df['iso3'] == '03M49WLD') & (df['year'] == 2025)].iloc[0]
     ap_2025 = df[(df['iso3'] == 'UNAAP') & (df['year'] == 2025)].iloc[0]
@@ -115,7 +120,7 @@ def test_all_6_figures_exist():
         'fig1_myanmar_longitudinal_trajectory.png',
         'fig2_southeast_asia_mortality_infection_divergence.png',
         'fig3_unaids_95_95_95_cascade_2025.png',
-        'fig4_lagged_art_mortality_dose_response.png',
+        'fig4_lagged_art_mortality_associations.png',
         'fig5_gdp_vs_art_coverage_disparity.png',
         'fig6_southeast_asia_art_trajectories_2010_2025.png'
     ]
@@ -133,7 +138,7 @@ def test_powerpoint_presentation():
     assert len(prs.slides) == 22
 
 def test_who_gho_cross_source_reconciliation():
-    """Verify 100% 1:1 numerical agreement between all 4 WHO GHO raw feeds and UNAIDS master dataset."""
+    """Verify Snapshot consistency of uncensored estimates between all 4 WHO GHO raw feeds and UNAIDS master dataset."""
     master = pd.read_csv(os.path.join(PROCESSED_DIR, 'hiv_epidemiology_master_1990_2025.csv'))
     feeds = [
         ('who_gho_art_coverage.csv', 'art_coverage_pct'),
@@ -147,11 +152,11 @@ def test_who_gho_cross_source_reconciliation():
         w = w[w['SpatialDimType'] == 'COUNTRY'].dropna(subset=['NumericValue'])
         m = master[['iso3', 'year', col]].dropna(subset=[col])
         j = pd.merge(m, w[['SpatialDim', 'TimeDim', 'NumericValue']], left_on=['iso3', 'year'], right_on=['SpatialDim', 'TimeDim'])
-        assert len(j) > 2000
+        assert len(j) > 1000
         diff = (j[col] - j['NumericValue']).abs()
         assert diff.max() == 0.0
         total_matched += len(j)
-    assert total_matched == 13191
+    assert total_matched == 9814
 
 def test_notebook_executed_outputs():
     """Verify all code cells in notebooks/hiv_epidemiology_research.ipynb have executed outputs."""

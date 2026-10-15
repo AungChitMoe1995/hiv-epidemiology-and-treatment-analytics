@@ -23,3 +23,7 @@ Thumbs.db
 .idea/
 ~$*.pptx
 ~$*.xlsx
+
+.pytest-tmp/
+.jupyter-runtime/
+.local-build/

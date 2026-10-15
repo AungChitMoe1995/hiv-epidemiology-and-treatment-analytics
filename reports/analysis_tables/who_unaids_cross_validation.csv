@@ -1,5 +1,5 @@
-who_file,who_indicator_code,unaids_variable,indicator_label,who_raw_rows,matched_country_years,exact_1to1_matches,exact_match_pct,max_abs_discrepancy,pearson_r
-who_gho_art_coverage.csv,HIV_ARTCOVERAGE,art_coverage_pct,ART Coverage (%),3848,2265,2265,100.0,0.0,1.0
-who_gho_hiv_deaths.csv,HIV_0000000006,aids_deaths,Annual AIDS-Related Deaths,3788,3606,3606,100.0,0.0,1.0
-who_gho_new_infections.csv,HIV_0000000026,new_infections,Annual New HIV Infections,3792,3610,3610,100.0,0.0,1.0
-who_gho_plhiv.csv,HIV_0000000001,plhiv,People Living with HIV (PLHIV),3892,3710,3710,100.0,0.0,1.0
+indicator,matched_country_years,exact_matches,max_absolute_difference,unaids_numeric_rows,who_country_numeric_rows,unaids_unmatched_numeric_rows
+art_coverage_pct,2263,2263,0.0,2407,3666,144
+aids_deaths,1755,1755,0.0,2652,3606,897
+new_infections,2381,2381,0.0,3461,3610,1080
+plhiv,3415,3415,0.0,4837,3710,1422

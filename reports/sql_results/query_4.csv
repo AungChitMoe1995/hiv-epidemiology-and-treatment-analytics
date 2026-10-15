@@ -1,14 +1,14 @@
 country_name,iso3,plhiv,pct_diagnosed_1st95,pct_on_art_of_diagnosed_2nd95,pct_suppressed_of_on_art_3rd95,overall_art_coverage_pct,pop_level_viral_suppression_pct
-Cambodia,KHM,76000.0,95.0,98.0,98.0,95.0,91.2
-Thailand,THA,620000.0,90.0,92.0,98.0,82.0,81.1
-Global,03M49WLD,41000000.0,88.0,89.0,95.0,78.0,74.4
-Viet Nam,VNM,270000.0,94.0,79.0,96.0,75.0,71.3
-Myanmar,MMR,310000.0,84.0,86.0,96.0,73.0,69.4
-Asia and the Pacific,UNAAP,7100000.0,81.0,88.0,96.0,72.0,68.4
-Timor-Leste,TLS,2200.0,89.0,74.0,70.0,66.0,46.1
-Lao PDR,LAO,23000.0,75.0,86.0,97.0,64.0,62.6
-Malaysia,MYS,85000.0,66.0,95.0,88.0,63.0,55.2
-Indonesia,IDN,560000.0,67.0,72.0,95.0,48.0,45.8
-Philippines,PHL,250000.0,62.0,66.0,97.0,41.0,39.7
+Cambodia,KHM,76000.0,95.0,,,95.0,93.0
+Thailand,THA,620000.0,90.0,92.0,,82.0,81.0
+Global,03M49WLD,41000000.0,88.0,89.0,95.0,78.0,74.0
+Viet Nam,VNM,270000.0,94.0,79.0,96.0,75.0,72.0
+Myanmar,MMR,310000.0,84.0,86.0,96.0,73.0,70.0
+Asia and the Pacific,UNAAP,7100000.0,81.0,88.0,96.0,72.0,69.0
+Timor-Leste,TLS,2200.0,89.0,74.0,70.0,66.0,46.0
+Lao PDR,LAO,23000.0,75.0,86.0,97.0,64.0,63.0
+Malaysia,MYS,85000.0,66.0,95.0,88.0,63.0,55.0
+Indonesia,IDN,560000.0,67.0,72.0,95.0,48.0,45.0
+Philippines,PHL,250000.0,62.0,66.0,97.0,41.0,40.0
 Brunei Darussalam,BRN,,,,,,
 Singapore,SGP,7800.0,,,,,

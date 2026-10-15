@@ -1,0 +1,14 @@
+*.csv text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.yml text eol=lf
+*.ipynb text eol=lf
+*.txt text eol=lf
+*.pptx -text
+*.xlsx -text
+*.db -text
+*.zip -text
+*.png -text
+data/raw/* -text

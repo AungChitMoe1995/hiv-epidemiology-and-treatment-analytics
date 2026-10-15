@@ -1,5 +1,5 @@
 year,adult_prev_pct,total_plhiv,annual_new_infections,annual_aids_deaths,art_coverage_pct,treatment_gap_pct,unreached_plhiv,mortality_per_100_plhiv_pct,aids_deaths_per_100k_pop,gdp_pc_usd
-1990,0.1,28000.0,15000.0,500.0,,,,1.79,1.26,53.0
+1990,0.1,28000.0,15000.0,,,,,,,53.0
 1991,0.2,45000.0,19000.0,530.0,,,,1.18,1.31,51.0
 1992,0.3,60000.0,17000.0,930.0,,,,1.55,2.27,59.0
 1993,0.3,72000.0,14000.0,1400.0,,,,1.94,3.37,76.0

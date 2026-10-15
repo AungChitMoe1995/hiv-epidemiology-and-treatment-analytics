@@ -66,7 +66,7 @@ def load_database():
         'art_coverage_pct', 'art_coverage_low', 'art_coverage_high',
         'on_art_2nd95_pct', 'on_art_2nd95_low', 'on_art_2nd95_high',
         'virally_suppressed_3rd95_pct', 'virally_suppressed_3rd95_low', 'virally_suppressed_3rd95_high',
-        'treatment_gap_pct', 'unreached_plhiv'
+        'virally_suppressed_all_pct', 'treatment_gap_pct', 'unreached_plhiv'
     ]
     # Filter where treatment data exists (year >= 2010)
     fact_casc = master_df[master_df['year'] >= 2010][casc_cols].drop_duplicates(subset=['iso3', 'year'])
